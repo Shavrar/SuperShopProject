@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using SuperShopProject.Constants;
 
 namespace SuperShopProject.Models
 {
@@ -17,6 +18,11 @@ namespace SuperShopProject.Models
 
         [Required]
         public string LastName { get; set; }
+
+        [Required]
+        public UserType Type { get; set; }
+
+        public ICollection<UserItem> UserItems { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User, Guid> manager)
         {

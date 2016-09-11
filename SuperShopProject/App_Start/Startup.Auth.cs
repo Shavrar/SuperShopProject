@@ -8,7 +8,7 @@ using SuperShopProject;
 using SuperShopProject.Managers;
 using SuperShopProject.Models;
 
-[assembly: OwinStartup(typeof(Startup))]
+
 
 namespace SuperShopProject
 {
