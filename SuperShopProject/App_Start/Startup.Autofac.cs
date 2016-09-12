@@ -27,6 +27,7 @@ namespace SuperShopProject
                 builder.RegisterType<ApplicationSignInManager>().AsSelf().InstancePerRequest();
                 builder.Register(c => HttpContext.Current.GetOwinContext().Authentication).InstancePerRequest();
                 builder.Register(c => app.GetDataProtectionProvider()).InstancePerRequest();
+                builder.RegisterType<ItemsManager>().AsSelf().InstancePerRequest();
 
                 var container = builder.Build();
                 DependencyResolver.SetResolver(new AutofacDependencyResolver(container));

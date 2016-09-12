@@ -1,0 +1,67 @@
+﻿@using System.Web.Mvc.Html
+@using SuperShopProject.Constants
+
+<h2 class="col-md-offset-1">Add Item</h2>
+
+<form class="form-horizontal" id="itemForm">
+    <div class="form-group">
+        <label class="col-md-1 control-label">Name</label>
+        <div class="col-md-11">
+            <input class="form-control" type="text" name="Name"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-1 control-label">Description</label>
+        <div class="col-md-11">
+            <input class="form-control" type="text" name="Description"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-1 control-label">Price</label>
+        <div class="col-md-11">
+            <input class="form-control" type="text" name="Price"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-1 control-label">Amount</label>
+        <div class="col-md-11">
+            <input class="form-control" type="number" name="Amount"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-1 control-label">Type</label>
+        <div class="col-md-11">
+            @Html.DropDownList("Type", EnumHelper.GetSelectList(typeof (ItemType)), new {@class = "form-control"})
+        </div>
+    </div>
+    <div class="form-group">       
+        <div class="col-md-offset-1">
+            <span class="btn btn-lg btn-info" onclick="tryAdd()">Add new item</span>
+        </div>
+    </div>
+</form>
+
+@section scripts
+{
+@Scripts.Render("~/bundles/form")
+    <script>
+        function tryAdd() {
+            $.ajax({
+                url: "/item",
+                dataType: "json",
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(formToObject('itemForm')),
+                async: true,
+                processData: false,
+                cache: false,
+                success: function (data) {
+                    alert(data);
+                },
+                error: function (xhr) {
+                    alert('error');
+                }
+            });
+        }
+    </script>
+}

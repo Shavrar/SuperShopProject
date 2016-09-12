@@ -30,7 +30,9 @@ namespace SuperShopProject
                         "~/Scripts/knockout-{version}.js"));
             bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
                 "~/Scripts/jquery-ui-{version}.js"));
-
+            bundles.Add(new ScriptBundle("~/bundles/form").Include(
+                "~/Scripts/formToObject.js"));
+            
         }
     }
 }

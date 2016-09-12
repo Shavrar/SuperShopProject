@@ -27,9 +27,15 @@ namespace SuperShopProject.Managers
             return await _db.Items.FindAsync(id);
         }
 
-        public async Task Add(Item item)
+        public async Task Add(Item2 item2)
         {
+            var item = new Item();
             item.Id = Guid.NewGuid();
+            item.Count = item2.Count;
+            item.Description = item2.Description;
+            item.Name = item2.Name;
+            item.Price = item2.Price;
+            item.Type = item2.Type;
             _db.Items.Add(item);
             await _db.SaveChangesAsync();
         }
