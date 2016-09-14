@@ -17,14 +17,6 @@ namespace SuperShopProject.Models
         public ICollection<UserItem> ItemUsers { get; set; }
     }
 
-    public class Item2
-    {       
-        public string Description { get; set; }
-        public double Price { get; set; }
-        public string Name { get; set; }
-        public ItemType Type { get; set; }
-        public int Count { get; set; }       
-    }
 
     public class UserItem
     {

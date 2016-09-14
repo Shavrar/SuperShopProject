@@ -4,7 +4,10 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Mvc;
 using SuperShopProject.Models;
+using SuperShopProject.ViewModels;
+using WebGrease;
 
 namespace SuperShopProject.Managers
 {
@@ -27,15 +30,15 @@ namespace SuperShopProject.Managers
             return await _db.Items.FindAsync(id);
         }
 
-        public async Task Add(Item2 item2)
+        public async Task Add(NewItemViewModel model, ModelStateDictionary modelState)
         {
-            var item = new Item();
-            item.Id = Guid.NewGuid();
-            item.Count = item2.Count;
-            item.Description = item2.Description;
-            item.Name = item2.Name;
-            item.Price = item2.Price;
-            item.Type = item2.Type;
+            if (await _db.Items.AnyAsync(it => it.Name == model.Name))
+            {
+                modelState.AddModelError("","Already exists");
+                return;
+            }
+            var item = new Item {Id = Guid.NewGuid()};
+            item = model.SetValues(item);
             _db.Items.Add(item);
             await _db.SaveChangesAsync();
         }

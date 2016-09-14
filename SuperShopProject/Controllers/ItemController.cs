@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using SuperShopProject.Managers;
 using SuperShopProject.Models;
+using SuperShopProject.ViewModels;
 
 namespace SuperShopProject.Controllers
 {
@@ -32,10 +34,20 @@ namespace SuperShopProject.Controllers
         }
         [HttpPut]
         [Route("")]      
-        public async Task<ActionResult> Item(Item2 item)
+        public async Task<ActionResult> Item(NewItemViewModel item)
+        {
+            if (ModelState.IsValid)
             {
-            await _itemsManager.Add(item);
-            return new HttpStatusCodeResult(200);
+                await _itemsManager.Add(item, ModelState);
+                if (ModelState.IsValid)
+                {
+                    Response.StatusCode = (int) HttpStatusCode.Created;
+                    return Json(new {Id = -1});
+                }
+            }
+            var errorList = ModelState.ToDictionary(kvp => kvp.Key,kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray());
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json(errorList);
         }
     }
 }

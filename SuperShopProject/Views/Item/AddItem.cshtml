@@ -2,36 +2,41 @@
 @using SuperShopProject.Constants
 
 <h2 class="col-md-offset-1">Add Item</h2>
-
+<div id="divValidationSummary"></div>
 <form class="form-horizontal" id="itemForm">
     <div class="form-group">
         <label class="col-md-1 control-label">Name</label>
         <div class="col-md-11">
             <input class="form-control" type="text" name="Name"/>
+            <span class="text-danger" name="Name"></span>
         </div>
     </div>
     <div class="form-group">
         <label class="col-md-1 control-label">Description</label>
         <div class="col-md-11">
             <input class="form-control" type="text" name="Description"/>
+            <span class="text-danger" name="Description"></span>
         </div>
     </div>
     <div class="form-group">
         <label class="col-md-1 control-label">Price</label>
         <div class="col-md-11">
             <input class="form-control" type="text" name="Price"/>
+            <span class="text-danger" name="Price"></span>
         </div>
     </div>
     <div class="form-group">
-        <label class="col-md-1 control-label">Amount</label>
+        <label class="col-md-1 control-label">Count</label>
         <div class="col-md-11">
-            <input class="form-control" type="number" name="Amount"/>
+            <input class="form-control" type="number" name="Count"/>
+            <span class="text-danger" name="Count"></span>
         </div>
     </div>
     <div class="form-group">
         <label class="col-md-1 control-label">Type</label>
         <div class="col-md-11">
             @Html.DropDownList("Type", EnumHelper.GetSelectList(typeof (ItemType)), new {@class = "form-control"})
+            <span class="text-danger" name="Type"></span>
         </div>
     </div>
     <div class="form-group">       
@@ -43,25 +48,79 @@
 
 @section scripts
 {
-@Scripts.Render("~/bundles/form")
+    @Scripts.Render("~/bundles/form")
+    @Scripts.Render("~/bundles/jqueryval")
     <script>
         function tryAdd() {
-            $.ajax({
-                url: "/item",
-                dataType: "json",
-                type: "PUT",
-                contentType: "application/json",
-                data: JSON.stringify(formToObject('itemForm')),
-                async: true,
-                processData: false,
-                cache: false,
-                success: function (data) {
-                    alert(data);
+            if ($("#itemForm").valid()) {
+                $.ajax({
+                    url: "/item",
+                    dataType: "json",
+                    type: "PUT",
+                    contentType: "application/json",
+                    data: JSON.stringify(formToObject('itemForm')),
+                    statusCode: {
+                        201: function() {
+                            window.location.href = '@Url.Action("Index", "Home")';
+                        },
+                        400: function(data) {
+                            $("#divValidationSummary").html("");         
+                            var div = "";
+                            for (var i = 0; i < data.responseJSON[""].length; i++) {
+                                div += "<p class='text-danger'>"+data.responseJSON[""][i]+"</p>";
+                            }
+                            $("#divValidationSummary").html(div);
+                            $("span").each(function () {
+                                div = "";
+                                if ($(this).attr("name") != null) {
+                                    for (var i = 0; i < data.responseJSON[$(this).attr("name")].length; i++) {
+                                        div += +data.responseJSON[$(this).attr("name")][i] + ". ";
+                                    }
+                                    $(this).text(div);
+                                }
+                                
+                            });
+                            
+                        }
+                    },
+                    error: function (xhr) {
+                        if (xhr.status != 400) {
+                            alert(xhr.StatusText);
+                        }
+                    }
+                });
+            }
+        }
+
+        $().ready(function() {
+            $("#itemForm").validate({
+                rules: {
+                    Name: "required",
+                    Description: "required",
+                    Price: {
+                        required: true,
+                        number: true,
+                        min: 1
+                    },
+                    Count: {
+                        required: true,
+                        min: 1
+                    }
                 },
-                error: function (xhr) {
-                    alert('error');
+                messages: {
+                    Name: "Please enter name of item",
+                    Description: "Please enter description of item",
+                    Price: {
+                        reqired: "Please enter price for item",
+                        number: "Should be a decimal",
+                        min: "Should be greate than 0"
+                    },
+                    Count: {
+                        required: "Plaese enter count of items",
+                        min: "Should be greate than 0"
+                    }
                 }
             });
-        }
+        });
     </script>
 }
