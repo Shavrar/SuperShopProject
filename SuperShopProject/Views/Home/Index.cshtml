@@ -1,9 +1,111 @@
-﻿@{
+﻿@using SuperShopProject.Constants
+@using SuperShopProject.Helpers
+@{
     ViewBag.Title = "Home Page";
 }
 
+<div class="row">
+<div class="col-md-2">
+    <h2>Patients</h2>
+    <div class="form-group">
+        
+    </div>
+    <div class="form-group">
+        
+    </div>
+    <div class="form-group">
+        
+    </div>
+    <div class="form-group">
+        <button id="btnSearch" class="btn btn-default">Search</button>
+        <button id="btnClear" class="btn btn-default">Clear</button>
+    </div>
+</div>
+<div class="col-md-10">
+    @if (User.IsInRole(Consts.AdministratorRole))
+    {
+        <h2>
+            <a href="@Url.Action("Add")" class="btn btn-primary">
+                <span class="glyphicon glyphicon-plus"></span> Create New
+            </a>
+        </h2>
+    }
+
+    <table class="table">
+        <tr>
+            @if (User.IsInRole(Consts.AdministratorRole))
+            {
+                <th></th>
+            }
+            <th>Name</th>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Price</th>
+            @if (User.IsInRole(Consts.AdministratorRole))
+            {
+                <th></th>
+            }
+            <th></th>
+        </tr>
+        <tbody data-bind="foreach: items">
+        <tr>
+            @if (User.IsInRole(Consts.AdministratorRole))
+            {
+                <td><input type="checkbox" data-bind="value: id"/></td>
+            }
+            <td data-bind="text: name"></td>
+            <td data-bind="text: description"></td>
+            <td data-bind="text: type"></td>
+            <td data-bind="text: price"></td>
+            @if (User.IsInRole(Consts.AdministratorRole))
+            {
+                <td>
+                    <a data-bind="attr: { href: '@Url.Action("Edit")/' + id }" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+                </td>
+            }
+        </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+
+
 @section scripts
 {
+    @Scripts.Render("~/bundles/knockout")
 
-        
+    <script>
+        var viewModel;
+        var types = JSON.stringify(@EnumHelper.GetSelectList(typeof(ItemType)).Select(a => new {a.Value, a.Text}));
+        $().ready(function() {
+            GetItems();
+        });
+
+        function GetType(id) {
+            
+        }
+
+        function ItemsViewModel(items) {
+            var self = this;
+            self.items = ko.observableArray(items);
+        }
+
+        function GetItems() {
+            $.ajax({
+                type: "GET",
+                url: "/item/all",
+                success: function (items) {
+                    if (viewModel == null) {
+                        viewModel = new ItemsViewModel(items);
+                        ko.applyBindings(viewModel);
+                    } else {
+                        viewModel.items.removeAll();
+                        ko.utils.arrayPushAll(viewModel.items, items);
+                    }
+                }
+            });
+        }
+    </script>
+    
+
 }

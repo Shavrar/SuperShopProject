@@ -49,5 +49,13 @@ namespace SuperShopProject.Controllers
             Response.StatusCode = (int)HttpStatusCode.BadRequest;
             return Json(errorList);
         }
+
+        [HttpGet]
+        [Route("all")]
+        public async Task<ActionResult> Item()
+        {
+            var items = await _itemsManager.GetAll();
+            return JsonNet(items);
+        }
     }
 }
