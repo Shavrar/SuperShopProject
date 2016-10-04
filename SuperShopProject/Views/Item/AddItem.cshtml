@@ -2,7 +2,7 @@
 @using SuperShopProject.Constants
 
 <h2 class="col-md-offset-1">Add Item</h2>
-<div id="divValidationSummary"></div>
+<div class="col-md-offset-1" id="divValidationSummary"></div>
 <form class="form-horizontal" id="itemForm">
     <div class="form-group">
         <label class="col-md-1 control-label">Name</label>
@@ -56,14 +56,14 @@
                 $.ajax({
                     url: "/item",
                     dataType: "json",
-                    type: "PUT",
+                    type: "POST",
                     contentType: "application/json",
                     data: JSON.stringify(formToObject('itemForm')),
                     statusCode: {
                         201: function() {
                             window.location.href = '@Url.Action("Index", "Home")';
                         },
-                        400: function(data) {
+                        400: function (data) {
                             $("#divValidationSummary").html("");         
                             var div = "";
                             for (var i = 0; i < data.responseJSON[""].length; i++) {

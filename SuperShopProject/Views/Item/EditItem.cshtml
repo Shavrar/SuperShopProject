@@ -1,0 +1,97 @@
+﻿@using System.Web.Mvc.Html
+@using System.Web.UI.WebControls
+@using SuperShopProject.Constants
+@model SuperShopProject.ViewModels.EditItemViewModel
+
+<h2 class="col-md-offset-1">Edit Item</h2>
+@Html.ValidationSummary()
+<form class="form-horizontal" id="itemForm">
+    @Html.HiddenFor(m => m.Id)      
+    <div class="form-group">
+        @Html.LabelFor(m => m.Name, new { @class = "control-label col-md-1" })
+        <div class="col-md-11">
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Description, new { @class = "control-label col-md-1" })
+        <div class="col-md-11">
+            @Html.TextBoxFor(m => m.Description, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Price, new { @class = "control-label col-md-1" })
+        <div class="col-md-11">
+            @Html.TextBoxFor(m => m.Price, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Count, new { @class = "control-label col-md-1" })
+        <div class="col-md-11">
+            @Html.TextBoxFor(m => m.Count, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Count, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Type, new { @class = "control-label col-md-1" })
+        <div class="col-md-11">
+            @Html.DropDownListFor(m => m.Type, EnumHelper.GetSelectList(typeof (ItemType)), new {@class = "form-control"})
+            @Html.ValidationMessageFor(m => m.Type, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-1">
+            <span class="btn btn-lg btn-info" onclick="tryAdd()">Save</span>
+        </div>
+    </div>
+</form>
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/form")
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        function tryAdd() {
+            if ($("#itemForm").valid()) {
+                $.ajax({
+                    url: "/item",
+                    dataType: "json",
+                    type: "PUT",
+                    contentType: "application/json",
+                    data: JSON.stringify(formToObject('itemForm')),
+                    statusCode: {
+                        200: function() {
+                            window.location.href = '@Url.Action("Index", "Home")';
+                        },
+                        400: function (data) {
+                            
+
+                            $("span").each(function () {
+                                var div = "";
+                                if ($(this).attr("data-valmsg-for") != null) {
+                                    
+                                    for (var i = 0; i < data.responseJSON[$(this).attr("data-valmsg-for")].length; i++) {
+                                        
+                                        div += data.responseJSON[$(this).attr("data-valmsg-for")][i];
+                                    }
+                                    
+                                    $(this).text(div);
+                                }
+
+                            });
+
+                        }
+                    },
+                    error: function (xhr) {
+                        if (xhr.status != 400) {
+                            alert(xhr.StatusText);
+                        }
+                    }
+                });
+            }
+        }       
+    </script>
+}

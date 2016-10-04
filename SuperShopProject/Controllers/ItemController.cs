@@ -32,7 +32,7 @@ namespace SuperShopProject.Controllers
                 return HttpNotFound();
             }
         }
-        [HttpPut]
+        [HttpPost]
         [Route("")]      
         public async Task<ActionResult> Item(NewItemViewModel item)
         {
@@ -46,6 +46,65 @@ namespace SuperShopProject.Controllers
                 }
             }
             var errorList = ModelState.ToDictionary(kvp => kvp.Key,kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray());
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json(errorList);
+        }
+
+        [HttpPut]
+        [Route("")]
+        public async Task<ActionResult> Item(EditItemViewModel item)
+        {
+            if (ModelState.IsValid)
+            {
+                await _itemsManager.Save(item, ModelState);
+                if (ModelState.IsValid)
+                {
+                    Response.StatusCode = (int)HttpStatusCode.OK;
+                    return Json(new { Id = -1 });
+                }
+            }
+            var errorList = ModelState.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray());
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json(errorList);
+        }
+
+        [HttpDelete]
+        [Route("")]
+        public async Task<ActionResult> Item(Guid[] list)
+        {
+            if (list.Any())
+            {
+                await _itemsManager.Remove(list);
+                Response.StatusCode = (int)HttpStatusCode.OK;
+                return Json("");
+            }
+            else
+            {
+                ModelState.AddModelError("","empty request");
+            }
+
+            var errorList = ModelState.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray());
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json(errorList);
+        }
+
+        [HttpGet]
+        [Route("edit")]
+        public async Task<ActionResult> Item(Guid id)
+        {
+            if (id != Guid.Empty)
+            {
+                var model = await _itemsManager.GetById(id);
+                if (ModelState.IsValid)
+                {
+                    return View("EditItem", model);
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("","Invalid ID");
+            }
+            var errorList = ModelState.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray());
             Response.StatusCode = (int)HttpStatusCode.BadRequest;
             return Json(errorList);
         }

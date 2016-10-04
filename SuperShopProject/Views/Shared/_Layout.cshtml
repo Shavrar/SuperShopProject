@@ -43,6 +43,20 @@
     @Scripts.Render("~/bundles/bootstrap")
     <script>
         $.ajaxSetup({ cache: false });
+        $().ready(function () {
+            if ($("#userName").val() != undefined) {
+                $.ajax({
+                    type: "GET",
+                    url: "http://localhost:61063/account/name",
+                    success: function (data) {
+                        console.log(data);
+                        if (data != null) {
+                            $("#userName").text(data.name);
+                        }
+                    }
+                });
+            }
+        });
     </script>
     @RenderSection("scripts", required: false)
 </body>

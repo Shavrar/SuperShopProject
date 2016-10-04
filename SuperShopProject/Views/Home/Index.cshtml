@@ -6,16 +6,35 @@
 
 <div class="row">
 <div class="col-md-2">
-    <h2>Patients</h2>
+    <h2>Items:</h2>
     <div class="form-group">
-        
+        <label class="control-label">Name</label>
+        <div>
+            <input class="form-control" type="text" name="Name" />
+            <span class="text-danger" name="Name"></span>
+        </div>
     </div>
     <div class="form-group">
-        
+        <label class="control-label">Description</label>
+        <div>
+            <input class="form-control" type="text" name="Description" />
+            <span class="text-danger" name="Description"></span>
+        </div>
     </div>
     <div class="form-group">
-        
+        <label class="control-label">Price</label>
+        <div>
+            <input class="form-control" type="text" name="Price"/>
+            <span class="text-danger" name="Price"></span>
+        </div>
     </div>
+    <div class="form-group">
+        <label class=" control-label">Type</label>
+        <div>
+            @Html.DropDownList("Type", EnumHelper.GetSelectList(typeof(ItemType)), new { @class = "form-control" })
+            <span class="text-danger" name="Type"></span>
+        </div>
+    </div>  
     <div class="form-group">
         <button id="btnSearch" class="btn btn-default">Search</button>
         <button id="btnClear" class="btn btn-default">Clear</button>
@@ -23,14 +42,16 @@
 </div>
 <div class="col-md-10">
     @if (User.IsInRole(Consts.AdministratorRole))
-    {
-        <h2>
-            <a href="@Url.Action("Add")" class="btn btn-primary">
-                <span class="glyphicon glyphicon-plus"></span> Create New
-            </a>
-        </h2>
+    {<h2>
+        <a href="http://localhost:61063/item/add" class="btn btn-primary">
+            <span class="glyphicon glyphicon-plus"></span> Create New
+        </a>
+        <button class="btn btn-danger" id="btnRemove">
+            <span class="glyphicon glyphicon-remove"></span> Remove
+        </button>
+    </h2>
     }
-
+    
     <table class="table">
         <tr>
             @if (User.IsInRole(Consts.AdministratorRole))
@@ -55,12 +76,12 @@
             }
             <td data-bind="text: name"></td>
             <td data-bind="text: description"></td>
-            <td data-bind="text: type"></td>
+            <td data-bind="text: GetType(type)"></td>
             <td data-bind="text: price"></td>
             @if (User.IsInRole(Consts.AdministratorRole))
             {
                 <td>
-                    <a data-bind="attr: { href: '@Url.Action("Edit")/' + id }" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+                    <a data-bind="attr: { href: 'http://localhost:61063/item/edit/?Id=' + id }" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
                 </td>
             }
         </tr>
@@ -76,13 +97,22 @@
 
     <script>
         var viewModel;
-        var types = JSON.stringify(@EnumHelper.GetSelectList(typeof(ItemType)).Select(a => new {a.Value, a.Text}));
+        @{
+            var en = EnumHelper.GetSelectList(typeof (ItemType));
+            var types = new Dictionary<string, string>();
+            foreach (var element in en)
+            {
+                types.Add(element.Value,element.Text);
+            }
+
+        }
+        var types = @Html.Raw(Json.Encode(@types));
         $().ready(function() {
             GetItems();
         });
 
         function GetType(id) {
-            
+            return types[id];
         }
 
         function ItemsViewModel(items) {

@@ -16,6 +16,7 @@ using SuperShopProject.ViewModels;
 
 namespace SuperShopProject.Controllers
 {
+    [RoutePrefix("account")]
     [Authorize]
     public class AccountController : BaseController
     {
@@ -65,6 +66,12 @@ namespace SuperShopProject.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("name")]
+        public ActionResult GetName()
+        {
+            return JsonNet(new {name = User.Identity.Name});
+        }
         
         [HttpPost]
         [ValidateAntiForgeryToken]
